@@ -72,6 +72,23 @@ var ContextMenu = new Lang.Class({
                                        this._routingUpdate.bind(this));
         this._routeItem.visible = false;
         this._routingUpdate();
+        this._initLongPress();
+    },
+
+    _initLongPress: function() {
+        this._longPressGesture =
+            new Gtk.GestureLongPress({ widget: this._mapView, 'touch-only': true });
+        this._longPressGesture.connect('pressed', this._onLongPress.bind(this));
+    },
+
+    _onLongPress: function(gesture, x, y) {
+        this._longitude = this._mapView.view.x_to_longitude(x);
+        this._latitude = this._mapView.view.y_to_latitude(y);
+        Mainloop.idle_add((function() {
+            let sequence = gesture.get_last_updated_sequence();
+
+            this.popup_at_pointer(gesture.get_last_event(sequence));
+        }).bind(this));
     },
 
     _onButtonReleaseEvent: function(widget, event) {
