@@ -39,6 +39,7 @@ const MapView = imports.mapView;
 const PlaceEntry = imports.placeEntry;
 const PlaceStore = imports.placeStore;
 const PrintOperation = imports.printOperation;
+const Service = imports.service;
 const ShapeLayer = imports.shapeLayer;
 const Sidebar = imports.sidebar;
 const Utils = imports.utils;
@@ -465,8 +466,11 @@ var MainWindow = new Lang.Class({
     },
 
     _onAerialViewActivate: function() {
-        this._mapView.setMapType(MapView.MapType.AERIAL);
-        this.layersPopover.setMapType(MapView.MapType.AERIAL);
+        // don't attempt to switch to aerial if we don't have tiles for it
+        if (Service.getService().tiles.aerial) {
+            this._mapView.setMapType(MapView.MapType.AERIAL);
+            this.layersPopover.setMapType(MapView.MapType.AERIAL);
+        }
     },
 
     _onToggleSidebarChangeState: function(action, variant) {
