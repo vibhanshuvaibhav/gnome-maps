@@ -20,21 +20,19 @@
  *         Jonas Danielsson <jonas@threetimestwo.org>
  */
 
-const Lang = imports.lang;
 const Mainloop = imports.mainloop;
 
 const Notification = imports.notification;
 
 const _TIMEOUT = 5000; /* ms */
 
-var NotificationManager = new Lang.Class({
-    Name: 'NotificationManager',
+var NotificationManager = class NotificationManager {
 
-    _init: function(overlay) {
+    constructor(overlay) {
         this._overlay = overlay;
-    },
+    }
 
-    _add: function(notification) {
+    _add(notification) {
         this._current = notification;
         if (!(notification instanceof Notification.Plain)) {
             let dismissId = notification.connect('dismissed', () => {
@@ -46,18 +44,18 @@ var NotificationManager = new Lang.Class({
         this._overlay.add_overlay(notification);
         Mainloop.timeout_add(_TIMEOUT, notification.dismiss.bind(notification));
         notification.reveal();
-    },
+    }
 
-    showMessage: function (msg) {
+    showMessage(msg) {
         let notification = new Notification.Plain(msg);
         notification.connect('dismissed', () => {
             this._current = null;
             notification.destroy();
         });
         this.showNotification(notification);
-    },
+    }
 
-    showNotification: function(notification) {
+    showNotification(notification) {
         if(notification.get_parent() === this._overlay)
             return;
         if (!this._current) {
@@ -68,4 +66,4 @@ var NotificationManager = new Lang.Class({
                                  this._add.bind(this, notification));
         }
     }
-});
+};
